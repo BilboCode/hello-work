@@ -111,9 +111,24 @@ Como hemos visto, el código javascript requiere del CSSOM para ejecutarse. Por 
 
 ## Métricas
 
-domContentLoaded
+### Eventos del navegador
+A través de la API javascript: Navegation Timming API, es posible recoger datos sobre el performance de una página web.
+Entre los eventos que recoge, podemos destacar:
+* **domLoading**: indica el momento en el que comienza el parser a procesar los primeros bytes del HTML que ya ha recibido. Nos da por tanto información de tiempos de red hasta primeros bytes.
+* **domInteractive**: indica el momento en el que el parser del navegador ha generado el DOM completo de la página. No significa que tb esté disponible el CSSOM, por lo que no indica que pueda comenzar el renderizado. Sí indica, que de existir, se han ejecutado los scripts síncronos, ya que estos interrumpen la generación del DOM. En este escenario, tb significará que se ha completado el CSSOM, ya que como sabemos la ejecución de estos scripts "síncronos" requieren que el CSSOM esté disponible.
+* **domContentLoadedEventEnd**: este evento del Timming API, coincide con el evento del `DomContentLoaded` del DOM. Indica que además de que el DOM se haya generado, también se han ejecutado todos los javascripts que se habían encolado para ejecutarse una vez el parser haya terminado la construcción del DOM (los javascript con el atributo `defer`). El método `.ready()` the `JQuery` permite ejecutar código cuando se ha alcanzado este punto en el que el DOM se considera disponible. 
+> the page's Document Object Model (DOM) becomes safe to manipulate. This will often be a good time to perform tasks that are needed before the user views or interacts with the page, for example to add event handlers and initialize plugins.
+Indicar que los ficheros javascripts con atributo `async` no quedan encolados como los `defer`para ser ejecutados cuando el parser haya terminado el DOM, sino que se ejecutan tan pronto están disponibles (se han descargado). Si el parser no ha completado el DOM, lo interrumpirán mientras se ejecutan (recordar que tampoco tienen que esperar al CSSOM), y si están disponibles una vez el parse ha terminado el DOM se ejecutarán en ese momento.
+* **domComplete**: indica que el proceso con el documento principal a terminado, y todos los recursos (imágenes, etc) se han descargado. Este evento del `Timming API` si todo va bien coincide practicamente con el evento `load` del window (`onload`).
 
-Valoración de https://developers.google.com/speed/pagespeed 
+> El Navigation Timming API no tiene ningún evento relacionado con el render de la página, siendo el domInteractive el más cercano a indicar cuando el navegador puede comenzar a renderizar contenido. Tan solo no se cumplirá en páginas en las que no haya scripts sincronos, algo realmente dificil de imaginar. Como hemos visto, en este escenario podríamos tener el evento domInteractive sin que se haya completado el CSSOM.
+
+> Es más habitual en las herramientas de medición, tener acceso al evento DomContentLoaded. Es un evento importante porque representa el momento en el que el documento es accesible y puede responder a la interactividad. Sin embargo no necesariamente coincide con el momento en que el navegador puede comenzar las tareas de renderizado. Como hemos visto, en caso de que haya una carga importante de javascripts con el atributo `defer`se puede dar la situación de que el pintado de los elementos de la página se inicien antes de que se ejecute el evento DomContentLoaded. 
+
+### Pagespeed Insight
+https://developers.google.com/speed/pagespeed  
+### Otros indicadore
+
 
 
 
@@ -127,4 +142,11 @@ Valoración de https://developers.google.com/speed/pagespeed
 
 ## Referencias
 http://www.stevesouders.com/blog/2013/05/13/moving-beyond-window-onload/
+https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp
+https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp?hl=es-419
+https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API
+https://developer.mozilla.org/en-US/docs/Web/API/PerformanceTiming
+http://stackoverflow.com/questions/3665561/document-readystate-of-interactive-vs-ondomcontentloaded
+http://stackoverflow.com/questions/8996852/load-and-execute-order-of-scripts
+
 
