@@ -1,6 +1,6 @@
 # Analizar la experiencia de carga de nuestras páginas
 > Por desgracia no existe una métrica `perception.ready()`que nos suministren los navegadores, por lo que tendremos que decidir en qué
-única métrica nos fijamos para analizar la experiencia de un usuario respecto a los tiempos de carga de nuestras páginas.
+métricas nos fijamos para analizar la experiencia de un usuario respecto a los tiempos de carga de nuestras páginas.
 
 
 ## window-onload no puede ser la referencia
@@ -75,7 +75,7 @@ No bloquean los procesos de renderering, si bien sí pueden afectar a los tiempo
 
 
 #### Render blocking CSS
-Como se ha visto en la descripción de la secuancia del CRP, sin que se hayan descargado todas las hojas de estilo y se haya generado el CSSOM, el navegador NO puede pintar contenido en pantalla.
+Como se ha visto en la descripción de la secuencia del CRP, sin que se hayan descargado todas las hojas de estilo y se haya generado el CSSOM, el navegador NO puede pintar contenido en pantalla.
 
 El número y tamaño de los ficheros css afectará por tanto al tiempo que necesita el navegador para mostrarle el primer pantallazo al usuario.
 
@@ -97,13 +97,11 @@ Lo más común es emplear el atributo en la etiqueta `async` o `defer`en la llam
 
 En ambos casos le estaríamos indicando al navegador que no bloquee el procesado del DOM.
 
-Adicionalmente, en el caso del atributo `async` estamos indicando al navegador que la ejecución del script no tiene que esperar al CSSOM. De ese, en caso de que se descargara el javascript antes de que se hubiera completado el CSSOM éste podría ejecutarse. Por supuesto tb antes de que se completase el DOM.
+Adicionalmente, en el caso del atributo `async` estamos indicando al navegador que la ejecución del script no tiene que esperar al CSSOM. De ese modo, en caso de que se descargara el javascript antes de que se hubiera completado el CSSOM éste podría ejecutarse. Por supuesto tb antes de que se completase el DOM.
 
 Por su parte, el atributo `defer` provoca que el javascript, aunque esté descargado, no se ejecute hasta después de que el DOM se ha completado.
 
-También en ambos casos hay que indicar que su ejecución no retrasa el evento domContentLoaded, que se producirá inmediatamente después de que se haya completado el DOM (aunque no se haya completado el CSSOM). Aunque el rendering de la página deberá esperar al CSSOM, dar un buen tiempo para el evento domContentLoaded es importante, porque representa el que el objeto DOM está disponible, lo que por ejemplo puede ser aprovechado para que se vinculen lo antes posible eventos javascript al documento.
-
-Otras técnicas, que requieren cierta programación, persiguen diferir no solo la ejecución, sino la descarga del javascript haciendo que ésta no se produzca hasta que se ha completado la descarga completa de los elementos de la página, evento load de la página. Esta técnica podrá aplicarse solo a ciertos javascript, a aquellos que puedan ejecutarse de forma diferida, sin afectar a la usabilidad de la página, ejemplo, ciertas analíticas, botones de redes sociales, etc. 
+Otras técnicas, que requieren cierta programación, persiguen diferir no solo la ejecución, sino la descarga del javascript haciendo que ésta no se produzca hasta que se ha completado la descarga completa de los elementos de la página, evento load de la página. Esta técnica podrá aplicarse solo a ciertos javascript, a aquellos que puedan ejecutarse de forma diferida sin afectar a la usabilidad de la página, ejemplo, ciertas analíticas, botones de redes sociales, etc. 
 
 #### Javascript bloqueado por el CSSOM
 Como hemos visto, el código javascript requiere del CSSOM para ejecutarse. Por un lado será importante asegurar una descarga lo más rápido posible de las hojas de estilo (pocos ficheros y de tamaño razonable), por otro será importante el orden en el que en el documento están las llamadas a los ficheros css y ficheros javascript, siendo la práctica general recomendada que estén las llamadas a ficheros css por encima de las llamadas a ficheros javascript.
@@ -115,9 +113,12 @@ A través de la API javascript: Navegation Timming API, es posible recoger datos
 Entre los eventos que recoge, podemos destacar:
 * **domLoading**: indica el momento en el que comienza el parser a procesar los primeros bytes del HTML que ya ha recibido. Nos da por tanto información de tiempos de red hasta primeros bytes.
 * **domInteractive**: indica el momento en el que el parser del navegador ha generado el DOM completo de la página. No significa que tb esté disponible el CSSOM, por lo que no indica que pueda comenzar el renderizado. Sí indica, que de existir, se han ejecutado los scripts síncronos, ya que estos interrumpen la generación del DOM. En este escenario, tb significará que se ha completado el CSSOM, ya que como sabemos la ejecución de estos scripts "síncronos" requieren que el CSSOM esté disponible.
-* **domContentLoadedEventEnd**: este evento del Timming API, coincide con el evento del `DomContentLoaded` del DOM. Indica que además de que el DOM se haya generado, también se han ejecutado todos los javascripts que se habían encolado para ejecutarse una vez el parser haya terminado la construcción del DOM (los javascript con el atributo `defer`). El método `.ready()` the `JQuery` permite ejecutar código cuando se ha alcanzado este punto en el que el DOM se considera disponible. 
+* **domContentLoadedEventEnd**: este evento del Timming API, coincide con el evento del `DomContentLoaded` del DOM. Indica que además de que el DOM se haya generado, también se han ejecutado todos los javascripts que se habían encolado para ejecutarse una vez el parser haya terminado la construcción del DOM (los javascript con el atributo `defer`). El método `.ready()` the `JQuery` permite ejecutar código cuando se ha alcanzado este punto en el que el DOM se considera disponible.
+
 > the page's Document Object Model (DOM) becomes safe to manipulate. This will often be a good time to perform tasks that are needed before the user views or interacts with the page, for example to add event handlers and initialize plugins.
+
 Indicar que los ficheros javascripts con atributo `async` no quedan encolados como los `defer`para ser ejecutados cuando el parser haya terminado el DOM, sino que se ejecutan tan pronto están disponibles (se han descargado). Si el parser no ha completado el DOM, lo interrumpirán mientras se ejecutan (recordar que tampoco tienen que esperar al CSSOM), y si están disponibles una vez el parse ha terminado el DOM se ejecutarán en ese momento.
+
 * **domComplete**: indica que el proceso con el documento principal a terminado, y todos los recursos (imágenes, etc) se han descargado. Este evento del `Timming API` si todo va bien coincide practicamente con el evento `load` del window (`onload`).
 
 > El Navigation Timming API no tiene ningún evento relacionado con el render de la página, siendo el `domInteractive` el más cercano a indicar cuando el navegador puede comenzar a renderizar contenido.
