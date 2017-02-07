@@ -154,7 +154,36 @@ etc.
 
 
 ## Técnicas de optimización del CRP
-tbc.
+A falta de desarrollarlo en mayor profundidad listamos algunas de las prácticas a analizar.
+
+### Tiempos de red
+* Activar la compresión de ficheros.
+* gestionar el caché del navegador
+* minificar los ficheros: html, javascript y css
+* uso de CSS sprints para ciertas imágenes
+
+### Priorizar la parte visible de la página
+* UX de modo que el contenido visible en primera pantalla resulte relevante al usuario
+* estructurar el HTML priorizando el contenido `above the fold`: ej1.- <content> por delante de <sidebar>, ej.- partir la estructura en una terraza que agrupe el contenido de la parte visible.
+* reducir la cantidad de datos requeridos en este primer pantallazo
+
+### Render blocking CSS
+* evitar uso de @import para llamar a las hojas de estilo
+* combinar ficheros de hojas de estilo, reduciendo el nº de ficheros css (mejor a uno)
+* evitar el overhead de estilos, haciendo uso de media queries, y gestionando convenientemente el overhead que puedan introducir ciertos frameworks.
+* inline CSS para el contenido "above the fold" 
+* optimizar tamaño y cacheo de fuentes 
+
+### Render blocking JS
+* evitar o diferir los Javascripts :) que vayan a impactar en el CRP: async, defer o técnicas de carga 
+* combinar ficheros Javascript
+
+### Diferir carga de imágenes y videos
+* Uso de lazy load para carga de imágenes
+* Técnica similar para los videos, retrasando su carga tras el evento onload.
+
+### Publicidad
+* Uff!
 
 
 ## Hay más aspectos que intervienen en los tiempos de carga de las páginas
