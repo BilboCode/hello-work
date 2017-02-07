@@ -3,6 +3,7 @@
 métricas nos fijamos para analizar la experiencia de un usuario respecto a los tiempos de carga de nuestras páginas.
 
 
+
 ## window-onload no puede ser la referencia
 Cuando se pide un análisis de la experiencia de carga de una página, la métrica que con más frecuencia se emplea es el evento `window-onload` (evento `load` del window).
 
@@ -15,6 +16,7 @@ Un buen ejemplo de esto es la [página de producto de Amazon] (https://www.amazo
 ![Amazon-times] (https://cloud.githubusercontent.com/assets/22852880/22625487/9a24645c-eb98-11e6-9c34-7c797714032f.png)
 
 A lo 3sg al usuario se le muestra practicamente completa la primera vista de la página (primer pantallazo, o `above the fold`), mientras que el evento `load` se produce a los 28sg.
+
 
 
 ## Critical Rendering Path
@@ -73,7 +75,6 @@ Aunque están fuera del CTR, cuando durante el parseo del HTML para la construci
 
 No bloquean los procesos de renderering, si bien sí pueden afectar a los tiempos de descarga de recursos `críticos`(css, javascripts), ya que sustraen ancho de banda, y consumen conexiones http (un navegador trabajando con el protocolo HTTP1 solo puede gesitonar 6 conexiones de modo simultáneo).
 
-
 #### Render blocking CSS
 Como se ha visto en la descripción de la secuencia del CRP, sin que se hayan descargado todas las hojas de estilo y se haya generado el CSSOM, el navegador NO puede pintar contenido en pantalla.
 
@@ -86,7 +87,6 @@ La excepción son las hojas de estilo cargadas a través de media queries. El na
 <link href="other.css" rel="stylesheet" media="(min-width: 1024px)">
 ```
 En este ejemplo, la hoja de estilo `style.css` bloqueará el `CRP` siempre, mientras que `print.css` no intervendrá cuando se está visualizando la página en la pantalla, lo mismo con `other.css` que no lo hará en el renderizado para móviles.
-
 
 #### Render blocking Javascript
 Como se ha visto en la de la secuancia del CRP, el efecto del javascript puede ser peor, ya que bloquea el proceso de construción del DOM.
@@ -105,6 +105,8 @@ Otras técnicas, que requieren cierta programación, persiguen diferir no solo l
 
 #### Javascript bloqueado por el CSSOM
 Como hemos visto, el código javascript requiere del CSSOM para ejecutarse. Por un lado será importante asegurar una descarga lo más rápido posible de las hojas de estilo (pocos ficheros y de tamaño razonable), por otro será importante el orden en el que en el documento están las llamadas a los ficheros css y ficheros javascript, siendo la práctica general recomendada que estén las llamadas a ficheros css por encima de las llamadas a ficheros javascript.
+
+
 
 ## Métricas
 
@@ -153,6 +155,7 @@ Obtenidos los tiempos, si lo que se quiere es realizar un análisis más profund
 etc.
 
 
+
 ## Técnicas de optimización del CRP
 A falta de desarrollarlo en mayor profundidad listamos algunas de las prácticas a analizar.
 
@@ -186,6 +189,7 @@ A falta de desarrollarlo en mayor profundidad listamos algunas de las prácticas
 * Uff!
 
 
+
 ## Hay más aspectos que intervienen en los tiempos de carga de las páginas
 Nos hemos centrado en el análisis del CRP, es decir, los eventos que se producen entre que el navegador comienza a recibir el html del documento principal y se pinta el pantallazo inicial. 
 
@@ -194,6 +198,8 @@ Sin embargo, en los tiempos de carga de la página intervienen más aspectos:
 * **los tiempos de construcción del CSSOM**, que dependerá del tamaño y estructura de las hojas de estilo
 * **los tiempos de contrucción del html en servidor**, que dependerá de la estructura de la página, y la programación de backend.
 * **los tiempos de red**, que dependerá de la configuración de servidores, uso de CDNs, estrategias de minificación, cacheado en navegador, etc.
+
+
 
 ## Referencias
 http://www.stevesouders.com/blog/2013/05/13/moving-beyond-window-onload/
